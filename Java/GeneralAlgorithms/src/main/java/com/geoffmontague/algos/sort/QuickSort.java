@@ -1,77 +1,60 @@
 package com.geoffmontague.algos.sort;
 
 import java.util.Comparator;
+import java.util.LinkedList;
+import java.util.List;
 
-public class QuickSort<T> implements Sort<T> {
-    final private Comparator<T> comparator;
-    final private Swapper swapper;
-
-    @Override
-    public void sort(SortableCollection collection) {
-
-    }
-
+public class QuickSort<T> extends AbstractSort<T> {
+/*
     public QuickSort(Comparator<T> comparator, Swapper swapper) {
         this.comparator = comparator;
         this.swapper = swapper;
     }
+*/
+    private static class Stack {
+        final int begin;
+        final int fin;
 
-    public ArrayList<Object> lomutoQS(ArrayList<Object> pL, int lo, int hi){
-        if (lo < hi){
-            int pIndex = lomutoPartition(pL, lo, hi);
-            lomutoQS(pL, lo, pIndex - 1);
-            lomutoQS(pL, pIndex + 1, hi);
+        public Stack(int begin, int fin) {
+            this.begin = begin;
+            this.fin = fin;
         }
-        return pL;
     }
 
-    private int lomutoPartition(ArrayList<Object> pL, int lo, int hi){
-        Object pivotElement = pL.get(hi);  //x
-        int i = lo - 1;
-        for (int j = lo; j < hi; j++){
-            if (pL.get(j).toString().compareTo(pivotElement.toString()) <= 0){
-                i++;
-                Collections.swap(pL, i, j);
+    public void sort(SortableCollection<T> sortable) {
+        final List<Stack> stack = new LinkedList<Stack>();
+        int start = 0;
+        int end = sortable.size() -1;
+        stack.add(new Stack(start, end));
+        int i = 1;
+        while (!stack.isEmpty()) {
+            Stack iter = stack.remove(0);
+            if (iter.begin < iter.fin) {
+                final T pivot = sortable.get(iter.begin);
+                int cutIndex = partition(sortable, iter.begin, iter.fin, pivot);
+                if( cutIndex == iter.begin ){
+                    cutIndex++;
+                }
+                stack.add(new Stack(iter.begin, cutIndex - 1));
+                stack.add(new Stack(cutIndex, iter.fin));
             }
         }
-        Collections.swap(pL, i + 1, hi);
-        return i + 1;
     }
 
-    public ArrayList<Object> lomutoQSMo3(ArrayList<Object> pL, int lo, int hi){
-        if (lo < hi){
-            int pIndex = lomutoPartitionMo3(pL, lo, hi);
-            lomutoQS(pL, lo, pIndex - 1);
-            lomutoQS(pL, pIndex + 1, hi);
-        }
-        return pL;
-    }
-
-    private int lomutoPartitionMo3(ArrayList<Object> pL, int lo, int hi){
-        Object pivotElement = medianOf3(pL, lo, hi);  //x
-        int i = lo - 1;
-        for (int j = lo; j < hi; j++){
-            if (pL.get(j).toString().compareTo(pivotElement.toString()) <= 0){
-                i++;
-                Collections.swap(pL, i, j);
+    public int partition(SortableCollection<T> sortable, int start, int end, T pivot) {
+        int small = start;
+        int large = end;
+        while (large > small) {
+            while (comparator.compare(sortable.get(small), pivot) < 0 && small < large ) {
+                small++;
+            }
+            while (comparator.compare(sortable.get(large), pivot) >= 0 && small < large) {
+                large--;
+            }
+            if (small < large) {
+                swapper.swap(small, large);
             }
         }
-        Collections.swap(pL, i + 1, hi);
-        return i + 1;
-    }
-
-    private Object medianOf3(ArrayList<Object> pL, int lo, int hi){
-        int center = (lo + hi) / 2;
-        if (pL.get(lo).toString().compareTo(pL.get(center).toString()) > 0){
-            Collections.swap(pL, lo, center);
-        }
-        if (pL.get(lo).toString().compareTo(pL.get(hi).toString()) > 0){
-            Collections.swap(pL, lo, hi);
-        }
-        if (pL.get(center).toString().compareTo(pL.get(hi).toString()) > 0){
-            Collections.swap(pL, center, hi);
-        }
-        Collections.swap(pL, center, hi - 1);
-        return pL.get(hi - 1);
+        return large;
     }
 }
