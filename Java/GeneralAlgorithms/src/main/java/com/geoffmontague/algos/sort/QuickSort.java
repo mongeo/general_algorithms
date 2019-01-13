@@ -5,12 +5,12 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class QuickSort<T> extends AbstractSort<T> {
-/*
+
     public QuickSort(Comparator<T> comparator, Swapper swapper) {
         this.comparator = comparator;
         this.swapper = swapper;
     }
-*/
+
     private static class Stack {
         final int begin;
         final int fin;
@@ -21,7 +21,8 @@ public class QuickSort<T> extends AbstractSort<T> {
         }
     }
 
-    public void sort(SortableCollection<T> sortable) {
+    @Override
+    public void sort(SortableCollection sortable) {
         final List<Stack> stack = new LinkedList<Stack>();
         int start = 0;
         int end = sortable.size() -1;
@@ -30,7 +31,7 @@ public class QuickSort<T> extends AbstractSort<T> {
         while (!stack.isEmpty()) {
             Stack iter = stack.remove(0);
             if (iter.begin < iter.fin) {
-                final T pivot = sortable.get(iter.begin);
+                final T pivot = (T) sortable.get(iter.begin);
                 int cutIndex = partition(sortable, iter.begin, iter.fin, pivot);
                 if( cutIndex == iter.begin ){
                     cutIndex++;

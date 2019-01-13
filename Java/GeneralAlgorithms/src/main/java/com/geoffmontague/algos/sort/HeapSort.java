@@ -1,6 +1,23 @@
 package com.geoffmontague.algos.sort;
 
-public class HeapSort<T> extends AbstractSort {
+import java.util.Collections;
+import java.util.Comparator;
+
+public class HeapSort<T> extends AbstractSort<T> {
+
+    public HeapSort(Comparator<T> comparator, Swapper swapper) {
+        this.comparator = comparator;
+        this.swapper = swapper;
+    }
+
+    @Override
+    public void sort(SortableCollection<T> sortable){
+        for (int i = sortable.size() - 1; i > 1; i--){
+            swapper.swap(0, i);
+            maxHeapify(sortable, 0);
+        }
+    }
+
     private int parent(int i){
         return i / 2;
     }
@@ -13,64 +30,64 @@ public class HeapSort<T> extends AbstractSort {
         return (i * 2) + 1;
     }
 
-    public void maxHeapify(ArrayList<Object> pL, int i){
+    public void maxHeapify(SortableCollection<T> sortable, int i){
         int l = left(i);
         int r = right(i);
         int largest = 0;
-        if (l < pL.size() && pL.get(l).toString().compareTo(pL.get(i).toString()) > 0){
+        if (l < sortable.size() && sortable.get(l).toString().compareTo(sortable.get(i).toString()) > 0){
             largest = l;
         } else {
             largest = i;
         }
-        if (r < pL.size() && pL.get(r).toString().compareTo(pL.get(largest).toString()) > 0){
+        if (r < sortable.size() && sortable.get(r).toString().compareTo(sortable.get(largest).toString()) > 0){
             largest = r;
         }
         if (largest != r) {
-            Collections.swap(pL, i, largest);
-            maxHeapify(pL, largest);
+            Collections.swap(sortable, i, largest);
+            maxHeapify(sortable, largest);
         }
     }
 
-    public void buildMaxHeap(ArrayList<Object> pL){
-        for (int i = pL.size() / 2; i > 0; i--){
-            maxHeapify(pL, i);
+    public void buildMaxHeap(SortableCollection<T> sortable){
+        for (int i = sortable.size() / 2; i > 0; i--){
+            maxHeapify(sortable, i);
         }
     }
 
-    public void heapIncreaseKey(ArrayList<Object> pL, int i, Object key){
-        if (pL.get(i).toString().compareTo(key.toString()) < 0){
+    public void heapIncreaseKey(SortableCollection<T> sortable, int i, Object key){
+        if (sortable.get(i).toString().compareTo(key.toString()) < 0){
             System.out.println("!!! Error: new key is smaller than current key !!!");
         }
-        pL.set(i, key);
-        while (i > 0 && pL.get(parent(i)).toString().compareTo(pL.get(i).toString()) < 0){
-            Collections.swap(pL, i, parent(i));
+        sortable.set(i, key);
+        while (i > 0 && sortable.get(parent(i)).toString().compareTo(sortable.get(i).toString()) < 0){
+            Collections.swap(sortable, i, parent(i));
             i = parent(i);
         }
     }
 
-    public void maxHeapInsert(ArrayList<Object> pL, Object key){
-        pL.add("");
-        heapIncreaseKey(pL, pL.size() - 1, key);
+    public void maxHeapInsert(SortableCollection<T> sortable, Object key){
+        sortable.add("");
+        heapIncreaseKey(sortable, sortable.size() - 1, key);
     }
 
-    public void heapSort(ArrayList<Object> pL){
-        for (int i = pL.size() - 1; i > 1; i--){
-            Collections.swap(pL, 0, i);
-            maxHeapify(pL, 0);
+    public void sort(SortableCollection<T> sortable){
+        for (int i = sortable.size() - 1; i > 1; i--){
+            Collections.swap(sortable, 0, i);
+            maxHeapify(sortable, 0);
         }
     }
 
-    public Object heapMax(ArrayList<Object> pL){
-        return pL.get(0);
+    public Object heapMax(SortableCollection<T> sortable){
+        return sortable.get(0);
     }
 
-    public Object heapExtractMax(ArrayList<Object> pL){
-        if (pL.size() < 0){
+    public Object heapExtractMax(SortableCollection<T> sortable){
+        if (sortable.size() < 0){
             System.out.println("!!! Error: Heap underflow !!!");
         }
-        Object max = pL.get(0);
-        pL.set(0, pL.get(pL.size() - 1));
-        maxHeapify(pL, 0);
+        Object max = sortable.get(0);
+        sortable.set(0, sortable.get(pL.size() - 1));
+        maxHeapify(sortable, 0);
         return max;
     }
 
